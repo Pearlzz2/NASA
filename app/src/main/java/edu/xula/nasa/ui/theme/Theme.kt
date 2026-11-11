@@ -1,9 +1,7 @@
 package edu.xula.nasa.ui.theme
 
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -16,7 +14,7 @@ private val DarkColorScheme = darkColorScheme(
     secondary = SecondaryTanDark,
     tertiary = TertiaryBronzeDark,
     background = TanBackground,
-    surface = TanBackground
+    surface = TanBackground,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -24,14 +22,14 @@ private val LightColorScheme = lightColorScheme(
     secondary = SecondaryTan,
     tertiary = TertiaryBronze,
     background = TanBackground,
-    surface = TanBackground
+    surface = TanBackground,
 )
 
 @Composable
 fun NASATheme(
     darkTheme: Boolean = false,
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) -> {
@@ -45,6 +43,6 @@ fun NASATheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }
