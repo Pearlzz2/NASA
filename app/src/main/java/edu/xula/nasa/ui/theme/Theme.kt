@@ -15,8 +15,8 @@ private val DarkColorScheme = darkColorScheme(
     primary = LightPurple,
     secondary = SecondaryTanDark,
     tertiary = TertiaryBronzeDark,
-    background = TanBackgroundDark,
-    surface = TanBackgroundDark
+    background = TanBackground,
+    surface = TanBackground
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -29,7 +29,7 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun NASATheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
