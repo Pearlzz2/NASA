@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +18,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import edu.xula.nasa.ui.theme.LightPurple
 import edu.xula.nasa.ui.theme.NASATheme
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -29,21 +32,21 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
 class MainActivity : ComponentActivity() {
-    var response: ResponseData? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            var response by remember { mutableStateOf<ResponseData?>(null) }
             var serverResponse by remember { mutableStateOf("Loading...") }
             Log.d("xavier", serverResponse)
             LaunchedEffect(true) {
                 withContext(Dispatchers.IO) {
                     serverResponse = try {
-                        response = getApodImage()[(0..24).random()] // max 25
-                        println(">>>>> Raw JSON: $response")
-                        // Log.d("xavier", response.toString())
-                        response.toString()
+                        val list = getApodImage()
+                        val item = list[(0..24).random()]
+                        response = item
+                        println(">>>>> Raw JSON: $item")
+                        item.toString()
                     } catch (exception: Exception) {
                         "Error: $exception"
                     }
@@ -51,8 +54,22 @@ class MainActivity : ComponentActivity() {
             }
 
             NASATheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Column(modifier = Modifier.padding(innerPadding)) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    containerColor = MaterialTheme.colorScheme.background
+                ) { innerPadding ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = "Peyton",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = LightPurple,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
                         DisplayImageFromUrl(response?.hdurl)
                     }
                 }
@@ -73,12 +90,11 @@ class MainActivity : ComponentActivity() {
             // parameter("date", date) // YYYY-MM-DD
         }
     }.body()
-
 }
 
 @Composable
 fun DisplayImageFromUrl(url: String?) {
     if (url != null) {
-        Text(url)
+        Text(text = url, color = MaterialTheme.colorScheme.onBackground)
     }
 }
