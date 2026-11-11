@@ -17,8 +17,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -74,10 +74,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            var itemsList by remember { mutableStateOf<List<ResponseData>>(sampleData) }
+            var itemsList by remember { mutableStateOf(sampleData) }
             var currentIndex by remember { mutableIntStateOf(0) }
 
-            LaunchedEffect(true) {
+            LaunchedEffect(Unit) {
                 withContext(Dispatchers.IO) {
                     try {
                         val fetched = getApodImage()
@@ -85,94 +85,98 @@ class MainActivity : ComponentActivity() {
                             itemsList = fetched
                             currentIndex = fetched.indices.random()
                         }
-                    } catch (exception: Exception) {
-                        Log.e("NASA", "Network error, fallback to sample data", exception)
+                    } catch (exception: Throwable) {
+                        Log.e("NASA", "Network fetch failed, showing sample data", exception)
                     }
                 }
             }
 
             NASATheme {
-                Scaffold(
+                Surface(
                     modifier = Modifier.fillMaxSize(),
-                    containerColor = MaterialTheme.colorScheme.background
-                ) { innerPadding ->
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        // Title / Name requirement
-                        Text(
-                            text = "Peyton",
-                            style = MaterialTheme.typography.titleLarge,
-                            color = LightPurple
-                        )
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    Scaffold(
+                        modifier = Modifier.fillMaxSize(),
+                        containerColor = MaterialTheme.colorScheme.background
+                    ) { innerPadding ->
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(innerPadding)
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            Text(
+                                text = "Peyton",
+                                style = MaterialTheme.typography.titleLarge,
+                                color = LightPurple
+                            )
 
-                        if (itemsList.isNotEmpty()) {
-                            val currentItem = itemsList[currentIndex]
+                            if (itemsList.isNotEmpty()) {
+                                val currentItem = itemsList[currentIndex]
 
-                            Card(
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.surface
-                                )
-                            ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(16.dp),
-                                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surface
+                                    )
                                 ) {
-                                    // Row 1: NASA Image
-                                    AsyncImage(
-                                        model = currentItem.hdurl.ifEmpty { currentItem.url },
-                                        contentDescription = currentItem.alt.ifEmpty { currentItem.title },
+                                    Column(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(220.dp),
-                                        contentScale = ContentScale.Crop
-                                    )
-
-                                    // Row 2: Image's title
-                                    Text(
-                                        text = currentItem.title,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-
-                                    // Row 3: Image's credit next to date
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween
+                                            .padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(12.dp)
                                     ) {
-                                        Text(
-                                            text = "Credit: ${currentItem.credit}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        // Row 1: NASA Image
+                                        AsyncImage(
+                                            model = currentItem.hdurl.ifEmpty { currentItem.url },
+                                            contentDescription = currentItem.alt.ifEmpty { currentItem.title },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(220.dp),
+                                            contentScale = ContentScale.Crop
                                         )
-                                        Text(
-                                            text = "Date: ${currentItem.date}",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    }
 
-                                    // Row 4: "Random image" button
-                                    Button(
-                                        onClick = {
-                                            if (itemsList.size > 1) {
-                                                var newIndex: Int
-                                                do {
-                                                    newIndex = itemsList.indices.random()
-                                                } while (newIndex == currentIndex)
-                                                currentIndex = newIndex
-                                            }
-                                        },
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text("Random image")
+                                        // Row 2: Image's title
+                                        Text(
+                                            text = currentItem.title,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+
+                                        // Row 3: Image's credit next to date
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween
+                                        ) {
+                                            Text(
+                                                text = "Credit: ${currentItem.credit}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                            Text(
+                                                text = "Date: ${currentItem.date}",
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+
+                                        // Row 4: "Random image" button
+                                        Button(
+                                            onClick = {
+                                                if (itemsList.size > 1) {
+                                                    var newIndex: Int
+                                                    do {
+                                                        newIndex = itemsList.indices.random()
+                                                    } while (newIndex == currentIndex)
+                                                    currentIndex = newIndex
+                                                }
+                                            },
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text("Random image")
+                                        }
                                     }
                                 }
                             }
@@ -183,17 +187,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private val client = HttpClient(CIO) {
-        install(ContentNegotiation) {
-            json(Json { ignoreUnknownKeys = true })
+    private suspend fun getApodImage(apiKey: String = "DEMO_KEY"): List<ResponseData> {
+        val client = HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json(Json { ignoreUnknownKeys = true })
+            }
+        }
+        return try {
+            client.get("https://science.nasa.gov/wp-json/wp/v2/apod-basic/?api_key=${apiKey}").body()
+        } finally {
+            client.close()
         }
     }
-
-    private suspend fun getApodImage(api_key: String = "DEMO_KEY"): List<ResponseData> = client.get(
-        "https://science.nasa.gov/wp-json/wp/v2/apod-basic/?api_key=${api_key}"
-    ) {
-        url {
-            // parameter("date", date) // YYYY-MM-DD
-        }
-    }.body()
 }
